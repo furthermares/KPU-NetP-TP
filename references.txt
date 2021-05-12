@@ -1,0 +1,2 @@
+append, read
+https://www.geeksforgeeks.org/relational-database-from-csv-files-in-c/
