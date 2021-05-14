@@ -8,7 +8,7 @@ int main()
 {
 	// Substitute the file_path string
 	// with full path of CSV file
-	FILE* fp = fopen("file_path.csv", "a+");
+	FILE* fp = fopen("main.csv", "a+");
 
 	char name[50];
 	int accountno, amount;
