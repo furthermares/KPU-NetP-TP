@@ -8,7 +8,7 @@ int main()
 {
 	// Substitute the full file path
 	// for the string file_path
-	FILE* fp = fopen("file_path.csv", "r");
+	FILE* fp = fopen("main.csv", "r");
 
 	if (!fp)
 		printf("Can't open file\n");
