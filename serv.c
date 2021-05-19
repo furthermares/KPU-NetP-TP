@@ -7,18 +7,16 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+#include "tp_read.h"
+//#include "tp_append.h"
+
 #define BUF_SIZE 100
 #define MAX_CLNT 256
 
 void * handle_clnt(void * arg);
-void func1(char * msg, int len);
+void send_msg(char * msg, int len);
+int tp_append();
 void error_handling(char * msg);
-
-int FUCK(int shit){
-	printf("FUCKSHIT %d\n", shit);
-	shit++;
-	return shit;
-}
 
 int clnt_cnt=0;
 int clnt_socks[MAX_CLNT];
@@ -71,24 +69,94 @@ void * handle_clnt(void * arg)
 	int str_len=0, i;
 	char msg[BUF_SIZE];
 	
-	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
-//		CODE STARTS
-		printf("==CODE STARTS==\n");
+//	CODE STARTS
+	printf("==CODE STARTS==\n");
+	write(clnt_sock, "Input (1,2,3,4,0=quit)\n", strlen("Input (1,2,3,4,0=quit)\n"));
 
+	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
+	
+		printf("==LOOP STARTS==\n");
+		
 		char* option = (char*)msg;
-		printf("option=[%s]\n",option);
+		printf("[SYS] option=[%s]\n",option);
 
 		switch(atoi(option)){
 			case 1:
-			printf("selected case 1\n");
-			func1(msg,str_len);
+			printf("[SYS] selected case 1\n");
+			write(clnt_sock, "[SYS] selected case 1\n", strlen("[SYS] selected case 1\n"));
+			tp_read();
 			break;
 
+			case 2:
+			printf("[SYS] selected case 2\n");
+			write(clnt_sock, "[SYS] selected case 2\n", strlen("[SYS] selected case 2\n"));
+			//tp_append(msg,str_len);
+
+			// Driver Code
+			
+			// Substitute the file_path string
+			// with full path of CSV file
+			FILE* fp = fopen("main.csv", "a+");
+
+			char name[50];
+			int accountno, amount;
+			if (!fp) {
+			// Error in file opening
+			printf("Can't open file\n");
+				return 0;
+			}
+
+			// Asking user input for the
+			// new record to be added
+			printf("\nEnter Account Holder Name\n");
+			//scanf("%s", &name);
+			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
+				strcpy(name, msg);
+			}
+			
+			printf("\nEnter Account Number\n");
+			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
+				accountno = atoi(msg);
+			}
+
+			printf("\nEnter Available Amount\n");
+			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
+				amount = atoi(msg);
+			}
+
+			// Saving data in file
+			fprintf(fp, "%s, %d, %d\n", name,
+					accountno, amount);
+
+			printf("\nNew Account added to record\n");
+			
+			//fflush(msg);
+			memset(msg, 0, sizeof(msg));
+
+			fclose(fp);
+			break;
+
+			case 3:
+			printf("[SYS] case 3 selected.\n");
+			write(clnt_sock, "[SYS] selected case 3\n", strlen("[SYS] selected case 3\n"));
+			break;
+
+			case 4:
+			printf("[SYS] case 4 selected.\n");
+			write(clnt_sock, "[SYS] selected case 4\n", strlen("[SYS] selected case 4\n"));
+			break;
+
+			case 0:
+			printf("[SYS] quitting server.\n");
+			write(clnt_sock, "[SYS] quitting server.\n", strlen("[SYS] quitting server\n"));
+			exit(0);
+			break; 
+
 			default:
-			printf("default\n");
+			printf("[SYS] default\n");
 		}
 
-		printf("==CODE ENDS==\n\n");
+		printf("==LOOPING==\n\n");
 //		CODE ENDS
 	}
 	
@@ -107,18 +175,63 @@ void * handle_clnt(void * arg)
 	close(clnt_sock);
 	return NULL;
 }
-void func1(char * msg, int len)   // send to all
+void send_msg(char * msg, int len)
 {
+	printf("[SYS] send_msg called.\n");
 	int i;
 	pthread_mutex_lock(&mutx);
 	for(i=0; i<clnt_cnt; i++) {
-		//
-
 		write(clnt_socks[i], msg, len);	
-		printf("func1 called.\n");
 	}	
 	pthread_mutex_unlock(&mutx);
 }
+
+
+// Driver Code
+int tp_append(char *msg, int len)
+{
+	//int clnt_sock=*((int*)arg);
+	//int str_len=0, i;
+	//char msg[BUF_SIZE];
+
+
+	// Substitute the file_path string
+	// with full path of CSV file
+	FILE* fp = fopen("main.csv", "a+");
+
+	char name[50];
+	int accountno, amount;
+
+	if (!fp) {
+		// Error in file opening
+		printf("Can't open file\n");
+		return 0;
+	}
+
+	// Asking user input for the
+	// new record to be added
+
+//	CODE STARTS
+	//while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0)
+	printf("tp_append msg=[%s]",msg);
+
+	printf("\nEnter Account Holder Name\n");
+	scanf("%s", &name);
+	printf("\nEnter Account Number\n");
+	scanf("%d", &accountno);
+	printf("\nEnter Available Amount\n");
+	scanf("%d", &amount);
+
+	// Saving data in file
+	fprintf(fp, "%s, %d, %d\n", name, accountno, amount);
+
+	printf("\nNew Account added to record\n");
+
+	fclose(fp);
+	return 0;
+}
+
+
 void error_handling(char * msg)
 {
 	fputs(msg, stderr);
