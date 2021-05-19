@@ -18,6 +18,8 @@ char msg[BUF_SIZE];
 	
 int main(int argc, char *argv[])
 {
+	printf("[SYS] clnt main called.\n");
+
 	int sock;
 	struct sockaddr_in serv_addr;
 	pthread_t snd_thread, rcv_thread;
@@ -25,7 +27,7 @@ int main(int argc, char *argv[])
 	if(argc!=4) {
 		printf("Usage : %s <IP> <port> <name>\n", argv[0]);
 		exit(1);
-	 }
+	}
 	
 	sprintf(name, "[%s]", argv[3]);
 	sock=socket(PF_INET, SOCK_STREAM, 0);
@@ -48,12 +50,14 @@ int main(int argc, char *argv[])
 	
 void * send_msg(void * arg)   // send thread main
 {
+	printf("[SYS] clnt send_msg called.\n");
+
 	int sock=*((int*)arg);
 	char name_msg[NAME_SIZE+BUF_SIZE];
 	while(1) 
 	{
 		fgets(msg, BUF_SIZE, stdin);
-		if(!strcmp(msg,"q\n")||!strcmp(msg,"Q\n")) 
+		if(!strcmp(msg,"0\n")) 
 		{
 			close(sock);
 			exit(0);
@@ -68,6 +72,8 @@ void * send_msg(void * arg)   // send thread main
 	
 void * recv_msg(void * arg)   // read thread main
 {
+	printf("[SYS] clnt recv_msg called.\n");
+
 	int sock=*((int*)arg);
 	char name_msg[NAME_SIZE+BUF_SIZE];
 	int str_len;
