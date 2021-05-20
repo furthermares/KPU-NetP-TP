@@ -1,57 +1,76 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<string.h>
-void make_file(char msg[]); // 파일명 입력받아 csv 파일 생성
-void read_file(); // test.csv 파일 내용 읽기
-void append_file(); // test.csv 파일에 내용 추가 (한줄) 
-void delete_file(char msg[]); // csv 파일 삭제 기능
-struct user_info {
-	char* id;
-	char* password;
+void make_file(char input_id[], int user_pwd); // id 입력받아 csv 파일 생성
+void read_file(char input_id[]); // test.csv 파일 내용 읽기
+void append_file(char input_id[]); // test.csv 파일에 내용 추가 (한줄) 
+void delete_file(char input_id[], int user_pwd); // csv 파일 삭제 기능
 
-};
-
-struct user_info user[30];
 int main()
 {
-	read_file();
-
-	make_file("text56", 1234);
-
-	return 0;
-}
-void make_file(char msg[],int pwd) // id 입력받아 csv 파일 생성
-{
-    char extension[50] = {".csv"};  // 확장자명
-    char filename[50] = { "" };  // 사용자 파일 이름
-	char id[50] = { "" };
-    strcpy(filename, msg);
-    strcat(filename, extension);
-	strcpy(id, msg);
-	FILE* fp;
-    fp = fopen(filename, "w"); // 파일 생성
-	fprintf(fp, "%s, %d\n", id,pwd);
-    fclose(fp);
-}
-void delete_file(char msg[]) // 파일명 입력받아 csv 파일 생성
-{
 	
+
 }
-void read_file() // test.csv 파일 내용 읽기
+void make_file(char input_id[], int user_pwd) // id 입력받아 csv 파일 생성
 {
-    FILE* fp = fopen("test.csv", "r");
-    if (!fp)
-        printf("Can't open file\n");
-    else {
-        // Here we have taken size of
-        // array 1024 you can modify it
+	char extension[50] = { ".csv" };  // 확장자명
+	char filename[50] = { "" };  // 사용자 파일 이름
+	char user_id[50] = { "" };
+	strcpy(filename, input_id);
+	strcat(filename, extension);
+	strcpy(user_id, input_id);
+	FILE* fp;
+	fp = fopen(filename, "w"); // 파일 생성
+	fprintf(fp, "%s, %d\n", user_id, user_pwd);
+	fclose(fp);
+}
+void delete_file(char input_id[], int user_pwd) // 파일명 입력받아 csv 파일 생성
+{
+	char extension[50] = { ".csv" };  // 확장자명
+	char filename[50] = { "" };  // 사용자 파일 이름
+	char user_id[50] = { "" };  // 사용자 아이디
+	char buffer[1024];  // 읽어들일 버퍼
+	
+	strcpy(filename, input_id);
+	strcat(filename, extension);
+	strcpy(user_id, input_id);
+
+	FILE* fp = fopen(filename, "r");
+	if (!fp) // 에러 발생 시 종료
+		return 0;
+	fgets(buffer, 1024, fp); // 파일 읽어들임
+	fclose(fp);
+	char* file_pwd = strtok(buffer, ", ");
+	file_pwd = atoi(strtok(NULL, ", ")); // 파일에 저장되어있는 비밀번호
+	if (file_pwd == user_pwd)
+	{
+		remove(filename);
+	}
+	else
+	{
+		printf("비밀번호 틀림");
+	}
+}
+void read_file(char input_id[]) // test.csv 파일 내용 읽기
+{
+	char extension[50] = { ".csv" };  // 확장자명
+	char filename[50] = { "" };  // 사용자 파일 이름
+	char user_id[50] = { "" };
+	strcpy(filename, input_id);
+	strcat(filename, extension);
+	strcpy(user_id, input_id);
+	FILE* fp = fopen(filename, "r");
+	if (!fp)
+		printf("Can't open file\n");
+	else {
+		// Here we have taken size of
+		// array 1024 you can modify it
 		char buffer[1024];
 
 		int row = 0;
 		int column = 0;
 
-		while (fgets(buffer,
-			1024, fp)) {
+		while (fgets(buffer,1024, fp)) {
 			column = 0;
 			row++;
 
@@ -108,11 +127,17 @@ void read_file() // test.csv 파일 내용 읽기
 	}
 	return 0;
 }
-void append_file()
+void append_file(char input_id[])
 {
-	FILE* fp = fopen("test.csv", "a+");
+	char extension[50] = { ".csv" };  // 확장자명
+	char filename[50] = { "" };  // 사용자 파일 이름
+	char user_id[50] = { "" };
+	strcpy(filename, input_id);
+	strcat(filename, extension);
+	strcpy(user_id, input_id);
+	FILE* fp = fopen(filename, "a+");
 
-	char Date[50],Type[50],Contents[50];
+	char Date[50], Type[50], Contents[50];
 	int price;
 
 	if (!fp) {
@@ -141,4 +166,3 @@ void append_file()
 	fclose(fp);
 	return 0;
 }
-
