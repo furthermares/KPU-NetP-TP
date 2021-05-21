@@ -14,8 +14,7 @@
 #define MAX_CLNT 256
 
 void * handle_clnt(void * arg);
-void send_msg(char * msg, int len);
-int tp_append();
+void send_msg(char * msg, int len);		//original code. just here for comparison.
 void error_handling(char * msg);
 
 int clnt_cnt=0;
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
 	
 		pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
 		pthread_detach(t_id);
-		printf("Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr));
+		printf("[SYS] Connected client IP: %s \n", inet_ntoa(clnt_adr.sin_addr));
 	}
 	close(serv_sock);
 	return 0;
@@ -70,30 +69,29 @@ void * handle_clnt(void * arg)
 	char msg[BUF_SIZE];
 	
 //	CODE STARTS
-	printf("==CODE STARTS==\n");
-	write(clnt_sock, "Input (1,2,3,4,0=quit)\n", strlen("Input (1,2,3,4,0=quit)\n"));
+	printf("[DEBUG] ==CODE STARTS==\n");
 
-	while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
+	while((write(clnt_sock, "Input (1,2,3,4,0=quit)\n", strlen("Input (1,2,3,4,0=quit)\n"))) &&
+	(str_len=read(clnt_sock, msg, sizeof(msg)))!=0) {
 	
-		printf("==LOOP STARTS==\n");
+		printf("[DEBUG] ==LOOP STARTS==\n");
 		
 		char* option = (char*)msg;
-		printf("[SYS] option=[%s]\n",option);
+		//printf("[SYS] option=[%s]\n",option);		//Marked For Deletion
 
 		switch(atoi(option)){
 			case 1:
-			printf("[SYS] selected case 1\n");
-			write(clnt_sock, "[SYS] selected case 1\n", strlen("[SYS] selected case 1\n"));
-			tp_read();
+			printf("[DEBUG] selected case 1\n");
+			//write(clnt_sock, "[SYS] selected case 1\n", strlen("[SYS] selected case 1\n"));
+//bring tp_read code to here for write func.
+			tp_read();								//MFD
 			break;
 
 			case 2:
-			printf("[SYS] selected case 2\n");
-			write(clnt_sock, "[SYS] selected case 2\n", strlen("[SYS] selected case 2\n"));
-			//tp_append(msg,str_len);
+			printf("[DEBUG] selected case 2\n");
+			//write(clnt_sock, "[SYS] selected case 2\n", strlen("[SYS] selected case 2\n"));
 
 			// Driver Code
-			
 			// Substitute the file_path string
 			// with full path of CSV file
 			FILE* fp = fopen("main.csv", "a+");
@@ -108,18 +106,21 @@ void * handle_clnt(void * arg)
 
 			// Asking user input for the
 			// new record to be added
-			printf("\nEnter Account Holder Name\n");
+			//printf("\nEnter Account Holder Name\n");	//MFD
+			write(clnt_sock, "\nEnter Account Holder Name\n", strlen("\nEnter Account Holder Name\n"));
 			//scanf("%s", &name);
 			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
 				strcpy(name, msg);
 			}
 			
-			printf("\nEnter Account Number\n");
+			//printf("\nEnter Account Number\n");			//MFD
+			write(clnt_sock, "\nEnter Account Number\n", strlen("\nEnter Account Number\n"));
 			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
 				accountno = atoi(msg);
 			}
 
-			printf("\nEnter Available Amount\n");
+			//printf("\nEnter Available Amount\n");		//MFD
+			write(clnt_sock, "\nEnter Available Amount\n", strlen("\nEnter Available Amount\n"));
 			if(str_len=read(clnt_sock, msg, sizeof(msg))!=0){
 				amount = atoi(msg);
 			}
@@ -128,9 +129,9 @@ void * handle_clnt(void * arg)
 			fprintf(fp, "%s, %d, %d\n", name,
 					accountno, amount);
 
-			printf("\nNew Account added to record\n");
+			//printf("\nNew Account added to record\n");	//MFD
+			write(clnt_sock, "\nNew Account added to record\n", strlen("\nNew Account added to record\n"));
 			
-			//fflush(msg);
 			memset(msg, 0, sizeof(msg));
 
 			fclose(fp);
@@ -138,17 +139,17 @@ void * handle_clnt(void * arg)
 
 			case 3:
 			printf("[SYS] case 3 selected.\n");
-			write(clnt_sock, "[SYS] selected case 3\n", strlen("[SYS] selected case 3\n"));
+			//write(clnt_sock, "[SYS] selected case 3\n", strlen("[SYS] selected case 3\n"));
 			break;
 
 			case 4:
 			printf("[SYS] case 4 selected.\n");
-			write(clnt_sock, "[SYS] selected case 4\n", strlen("[SYS] selected case 4\n"));
+			//write(clnt_sock, "[SYS] selected case 4\n", strlen("[SYS] selected case 4\n"));
 			break;
 
-			case 0:
+			case 9:
 			printf("[SYS] quitting server.\n");
-			write(clnt_sock, "[SYS] quitting server.\n", strlen("[SYS] quitting server\n"));
+			//write(clnt_sock, "[SYS] quitting server.\n", strlen("[SYS] quitting server\n"));
 			exit(0);
 			break; 
 
@@ -185,52 +186,6 @@ void send_msg(char * msg, int len)
 	}	
 	pthread_mutex_unlock(&mutx);
 }
-
-
-// Driver Code
-int tp_append(char *msg, int len)
-{
-	//int clnt_sock=*((int*)arg);
-	//int str_len=0, i;
-	//char msg[BUF_SIZE];
-
-
-	// Substitute the file_path string
-	// with full path of CSV file
-	FILE* fp = fopen("main.csv", "a+");
-
-	char name[50];
-	int accountno, amount;
-
-	if (!fp) {
-		// Error in file opening
-		printf("Can't open file\n");
-		return 0;
-	}
-
-	// Asking user input for the
-	// new record to be added
-
-//	CODE STARTS
-	//while((str_len=read(clnt_sock, msg, sizeof(msg)))!=0)
-	printf("tp_append msg=[%s]",msg);
-
-	printf("\nEnter Account Holder Name\n");
-	scanf("%s", &name);
-	printf("\nEnter Account Number\n");
-	scanf("%d", &accountno);
-	printf("\nEnter Available Amount\n");
-	scanf("%d", &amount);
-
-	// Saving data in file
-	fprintf(fp, "%s, %d, %d\n", name, accountno, amount);
-
-	printf("\nNew Account added to record\n");
-
-	fclose(fp);
-	return 0;
-}
-
 
 void error_handling(char * msg)
 {
