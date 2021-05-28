@@ -21,6 +21,7 @@ bool check_id(char input_id[], int pwd);
 int exists(const char* fname);
 const char* read_file(char input_id[]); // test.csv 파일 내용 읽기
 const char* monthly_read_file(char input_id[], int input_month); // 월별 조회
+int balance(char input_id[]); // 수입, 지출 계산
 int clnt_cnt = 0;
 int clnt_socks[MAX_CLNT];
 pthread_mutex_t mutx;
@@ -154,8 +155,8 @@ void* handle_clnt(void* arg)
 		}
 	}
 
-	while ((write(clnt_sock, "1. 가계부 조회\n2. 가계부 내용 추가\n3. 가계부 삭제\n4. 월별 조회\n0. 종료\n번호 입력 : \n",
-		strlen("1. 가계부 조회\n2. 가계부 내용 추가\n3. 가계부 삭제\n4. 월별 조회\n0. 종료\n번호 입력 : \n"))) && (str_len = read(clnt_sock, msg, sizeof(msg))) != 0) {
+	while ((write(clnt_sock, "1. 가계부 조회\n2. 가계부 내용 추가\n3. 가계부 삭제\n4. 월별 조회\n5. 잔고 계산\n0. 종료\n번호 입력 : \n",
+		strlen("1. 가계부 조회\n2. 가계부 내용 추가\n3. 가계부 삭제\n4. 월별 조회\n5. 잔고 계산\n0. 종료\n번호 입력 : \n"))) && (str_len = read(clnt_sock, msg, sizeof(msg))) != 0) {
 
 		char* option = (char*)msg;
 
@@ -214,6 +215,20 @@ void* handle_clnt(void* arg)
 				break;
 			}
 			break;
+
+		case 5:
+			if (access(check_file, 0) == 0)
+			{
+				sprintf(data, "잔고: %d\n", balance(username));
+				write(fd_index, data, strlen(data));
+			}
+			else {
+				write(fd_index, "[알림] 가계부가 존재하지 않습니다.\n", strlen("[알림] 가계부가 존재하지 않습니다.\n"));
+				strcpy(check_file, "");
+				break;
+			}
+			break;
+
 		default:
 			write(fd_index, "[알림] 잘못된 입력입니다.\n\n", strlen("[알림] 잘못된 입력입니다.\n\n"));
 			break;
@@ -501,3 +516,60 @@ const char* monthly_read_file(char input_id[], int input_month) // 월별 조회
 	}
 	return output_buffer;
 }
+
+int balance(char input_id[])
+{
+	static char output_buffer[1024];
+	char extension[50] = { ".csv" };  // 확장자명
+	char filename[50] = { "" };  // 사용자 파일 이름
+	char user_id[50] = { "" };
+	strcpy(filename, input_id);
+	strcat(filename, extension);
+	strcpy(user_id, input_id);
+
+	int bal = 0;
+	int bal_type_flag = 0;
+
+	FILE* fp = fopen(filename, "r");
+	if (!fp)
+		printf("Can't open file\n");
+	else {
+		char buffer[1024] = { "" };
+
+		int row = 0;
+		int column = 0;
+
+		while (fgets(buffer, 1024, fp)) {
+			column = 0;
+			row++;
+
+			char* value = strtok(buffer, ", ");
+
+			while (value) {
+				if (column == 1) {	// 유형
+					if (strcmp(value, "수익") == 0)
+						bal_type_flag = 1;
+
+					else if (strcmp(value, "지출") == 0)
+						bal_type_flag = -1;
+
+					else
+						bal_type_flag = 0;
+				}
+			
+				if (column == 3) {	// 금액
+					if (bal_type_flag == 1)
+						bal += atoi(value);
+					else if (bal_type_flag == -1)
+						bal -= atoi(value);
+				}
+				value=strtok(NULL,", ");
+				column++;
+
+			}
+		}
+		fclose(fp);
+	}
+	return bal;
+}
+
