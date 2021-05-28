@@ -1,60 +1,60 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<string.h>
-void make_file(char input_id[], int user_pwd); // id ÀÔ·Â¹Ş¾Æ csv ÆÄÀÏ »ı¼º
-void read_file(char input_id[]); // test.csv ÆÄÀÏ ³»¿ë ÀĞ±â
-void append_file(char input_id[]); // test.csv ÆÄÀÏ¿¡ ³»¿ë Ãß°¡ (ÇÑÁÙ) 
-void delete_file(char input_id[], int user_pwd); // csv ÆÄÀÏ »èÁ¦ ±â´É
+void make_file(char input_id[], int user_pwd); // id ì…ë ¥ë°›ì•„ csv íŒŒì¼ ìƒì„±
+void read_file(char input_id[]); // test.csv íŒŒì¼ ë‚´ìš© ì½ê¸°
+void append_file(char input_id[]); // test.csv íŒŒì¼ì— ë‚´ìš© ì¶”ê°€ (í•œì¤„) 
+void delete_file(char input_id[], int user_pwd); // csv íŒŒì¼ ì‚­ì œ ê¸°ëŠ¥
 
 int main()
 {
 	
 
 }
-void make_file(char input_id[], int user_pwd) // id ÀÔ·Â¹Ş¾Æ csv ÆÄÀÏ »ı¼º
+void make_file(char input_id[], int user_pwd) // id ì…ë ¥ë°›ì•„ csv íŒŒì¼ ìƒì„±
 {
-	char extension[50] = { ".csv" };  // È®ÀåÀÚ¸í
-	char filename[50] = { "" };  // »ç¿ëÀÚ ÆÄÀÏ ÀÌ¸§
+	char extension[50] = { ".csv" };  // í™•ì¥ìëª…
+	char filename[50] = { "" };  // ì‚¬ìš©ì íŒŒì¼ ì´ë¦„
 	char user_id[50] = { "" };
 	strcpy(filename, input_id);
 	strcat(filename, extension);
 	strcpy(user_id, input_id);
 	FILE* fp;
-	fp = fopen(filename, "w"); // ÆÄÀÏ »ı¼º
+	fp = fopen(filename, "w"); // íŒŒì¼ ìƒì„±
 	fprintf(fp, "%s, %d\n", user_id, user_pwd);
 	fclose(fp);
 }
-void delete_file(char input_id[], int user_pwd) // ÆÄÀÏ¸í ÀÔ·Â¹Ş¾Æ csv ÆÄÀÏ »ı¼º
+void delete_file(char input_id[], int user_pwd) // íŒŒì¼ëª… ì…ë ¥ë°›ì•„ csv íŒŒì¼ ìƒì„±
 {
-	char extension[50] = { ".csv" };  // È®ÀåÀÚ¸í
-	char filename[50] = { "" };  // »ç¿ëÀÚ ÆÄÀÏ ÀÌ¸§
-	char user_id[50] = { "" };  // »ç¿ëÀÚ ¾ÆÀÌµğ
-	char buffer[1024];  // ÀĞ¾îµéÀÏ ¹öÆÛ
+	char extension[50] = { ".csv" };  // í™•ì¥ìëª…
+	char filename[50] = { "" };  // ì‚¬ìš©ì íŒŒì¼ ì´ë¦„
+	char user_id[50] = { "" };  // ì‚¬ìš©ì ì•„ì´ë””
+	char buffer[1024];  // ì½ì–´ë“¤ì¼ ë²„í¼
 	
 	strcpy(filename, input_id);
 	strcat(filename, extension);
 	strcpy(user_id, input_id);
 
 	FILE* fp = fopen(filename, "r");
-	if (!fp) // ¿¡·¯ ¹ß»ı ½Ã Á¾·á
+	if (!fp) // ì—ëŸ¬ ë°œìƒ ì‹œ ì¢…ë£Œ
 		return 0;
-	fgets(buffer, 1024, fp); // ÆÄÀÏ ÀĞ¾îµéÀÓ
+	fgets(buffer, 1024, fp); // íŒŒì¼ ì½ì–´ë“¤ì„
 	fclose(fp);
 	char* file_pwd = strtok(buffer, ", ");
-	file_pwd = atoi(strtok(NULL, ", ")); // ÆÄÀÏ¿¡ ÀúÀåµÇ¾îÀÖ´Â ºñ¹Ğ¹øÈ£
+	file_pwd = atoi(strtok(NULL, ", ")); // íŒŒì¼ì— ì €ì¥ë˜ì–´ìˆëŠ” ë¹„ë°€ë²ˆí˜¸
 	if (file_pwd == user_pwd)
 	{
 		remove(filename);
 	}
 	else
 	{
-		printf("ºñ¹Ğ¹øÈ£ Æ²¸²");
+		printf("ë¹„ë°€ë²ˆí˜¸ í‹€ë¦¼");
 	}
 }
-void read_file(char input_id[]) // test.csv ÆÄÀÏ ³»¿ë ÀĞ±â
+void read_file(char input_id[]) // test.csv íŒŒì¼ ë‚´ìš© ì½ê¸°
 {
-	char extension[50] = { ".csv" };  // È®ÀåÀÚ¸í
-	char filename[50] = { "" };  // »ç¿ëÀÚ ÆÄÀÏ ÀÌ¸§
+	char extension[50] = { ".csv" };  // í™•ì¥ìëª…
+	char filename[50] = { "" };  // ì‚¬ìš©ì íŒŒì¼ ì´ë¦„
 	char user_id[50] = { "" };
 	strcpy(filename, input_id);
 	strcat(filename, extension);
@@ -82,13 +82,13 @@ void read_file(char input_id[]) // test.csv ÆÄÀÏ ³»¿ë ÀĞ±â
 			// Splitting the data
 			char* value = strtok(buffer, ", ");
 
-			if (row == 1) // Ã¹ÇàÀº ¾ÆÀÌµğ, ºñ¹Ğ¹øÈ£ Ãâ·Â
+			if (row == 1) // ì²«í–‰ì€ ì•„ì´ë””, ë¹„ë°€ë²ˆí˜¸ ì¶œë ¥
 			{
-				printf("\t¾ÆÀÌµğ : ");
+				printf("\tì•„ì´ë”” : ");
 				printf("%s", value);
 
 				value = strtok(NULL, ", ");
-				printf("\t\tºñ¹Ğ¹øÈ£ : ");
+				printf("\t\të¹„ë°€ë²ˆí˜¸ : ");
 				printf("%s", value);
 				printf("\n\n");
 				continue;
@@ -97,22 +97,22 @@ void read_file(char input_id[]) // test.csv ÆÄÀÏ ³»¿ë ÀĞ±â
 			while (value) {
 				// Column 1
 				if (column == 0) {
-					printf("³¯Â¥ : ");
+					printf("ë‚ ì§œ : ");
 				}
 
 				// Column 2
 				if (column == 1) {
-					printf("\tÀ¯Çü : ");
+					printf("\tìœ í˜• : ");
 				}
 
 				// Column 3
 				if (column == 2) {
-					printf("\t³»¿ë : ");
+					printf("\të‚´ìš© : ");
 				}
 
 				// Column 4
 				if (column == 3) {
-					printf("\t\t±İ¾× : ");
+					printf("\t\tê¸ˆì•¡ : ");
 				}
 
 				printf("%s", value);
@@ -129,8 +129,8 @@ void read_file(char input_id[]) // test.csv ÆÄÀÏ ³»¿ë ÀĞ±â
 }
 void append_file(char input_id[])
 {
-	char extension[50] = { ".csv" };  // È®ÀåÀÚ¸í
-	char filename[50] = { "" };  // »ç¿ëÀÚ ÆÄÀÏ ÀÌ¸§
+	char extension[50] = { ".csv" };  // í™•ì¥ìëª…
+	char filename[50] = { "" };  // ì‚¬ìš©ì íŒŒì¼ ì´ë¦„
 	char user_id[50] = { "" };
 	strcpy(filename, input_id);
 	strcat(filename, extension);
@@ -148,20 +148,20 @@ void append_file(char input_id[])
 
 	// Asking user input for the
 	// new record to be added
-	printf("\n³¯Â¥ ÀÔ·Â : ");
+	printf("\në‚ ì§œ ì…ë ¥ : ");
 	scanf("%s", &Date);
-	printf("\nÀ¯Çü ÀÔ·Â : ");
+	printf("\nìœ í˜• ì…ë ¥ : ");
 	scanf("%s", &Type);
-	printf("\n³»¿ë ÀÔ·Â : ");
+	printf("\në‚´ìš© ì…ë ¥ : ");
 	scanf("%s", &Contents);
-	printf("\n±İ¾× ÀÔ·Â : ");
+	printf("\nê¸ˆì•¡ ì…ë ¥ : ");
 	scanf("%d", &price);
 
 	// Saving data in file
 	fprintf(fp, "%s, %s, %s, %d\n", Date,
 		Type, Contents, price);
 
-	printf("\n µ¥ÀÌÅÍ Ãß°¡ ¿Ï·á \n");
+	printf("\n ë°ì´í„° ì¶”ê°€ ì™„ë£Œ \n");
 
 	fclose(fp);
 	return 0;
