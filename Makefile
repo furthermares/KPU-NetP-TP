@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -D_REENTRANT
 CLIBS = -pthread
-CMDS  = s c
+CMDS  = serv clnt
 
 all : $(CMDS)
 
