@@ -35,10 +35,6 @@
 
 이상.
 
-
-
-
-
 ##### 참고했던 자료들 
 append, read codes from
 https://www.geeksforgeeks.org/relational-database-from-csv-files-in-c/
